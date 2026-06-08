@@ -91,7 +91,7 @@ export default function Home() {
       </section>
 
       <section className="video-section">
-        <video src="/umrah.mp4" autoPlay loop muted playsInline className="video-placeholder object-cover" />
+        <video src="/umrah.mp4" poster="https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=1200&q=80" autoPlay loop muted playsInline className="video-placeholder object-cover" />
         <div className="video-overlay">
           <div className="play-btn"><i className="fas fa-play"></i></div>
         </div>
