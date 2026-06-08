@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explora Journeys - Luxury Ocean Journeys</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+--primary-dark: #1a1a1a; --text-dark: #2c2c2c; --text-light: #666; --text-lighter: #999;
+--bg-cream: #f5f3ef; --bg-light: #faf9f7; --bg-white: #ffffff; --border-light: #e8e5e0;
+--border-medium: #d5d0c8; --accent-navy: #1e3a5f; --accent-gold: #c9a96e;
+--price-gray: #888; --tag-bg: #f0ede8; --tag-text: #7a756d;
+}
+body { font-family: 'Inter', sans-serif; color: var(--text-dark); background: var(--bg-white); line-height: 1.6; overflow-x: hidden; }
+
+/* HEADER */
+.header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-light); transition: box-shadow 0.3s; }
+.header.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+.header-inner { max-width: 1400px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 70px; }
+.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; cursor: pointer; }
+.logo-icon { width: 36px; height: 36px; border: 1.5px solid var(--text-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; }
+.logo-icon::before { content: ''; position: absolute; width: 20px; height: 20px; border: 1px solid var(--text-dark); border-radius: 50%; }
+.logo-icon::after { content: ''; position: absolute; width: 8px; height: 8px; background: var(--text-dark); border-radius: 50%; }
+.logo-text { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500; color: var(--text-dark); letter-spacing: 1px; }
+.logo-sub { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); margin-top: -2px; }
+.nav-main { display: flex; gap: 32px; list-style: none; }
+.nav-main a { text-decoration: none; color: var(--text-dark); font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; transition: color 0.3s; position: relative; cursor: pointer; }
+.nav-main a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px; background: var(--text-dark); transition: width 0.3s; }
+.nav-main a:hover::after, .nav-main a.active::after { width: 100%; }
+.header-actions { display: flex; align-items: center; gap: 20px; }
+.header-actions i { font-size: 16px; color: var(--text-dark); cursor: pointer; transition: opacity 0.3s; }
+.header-actions i:hover { opacity: 0.6; }
+.btn-contact { padding: 8px 20px; border: 1px solid var(--text-dark); background: transparent; color: var(--text-dark); font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.3s; }
+.btn-contact:hover { background: var(--text-dark); color: var(--bg-white); }
+.btn-reserve { padding: 8px 20px; border: 1px solid var(--text-dark); background: var(--text-dark); color: var(--bg-white); font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.3s; }
+.btn-reserve:hover { background: transparent; color: var(--text-dark); }
+
+/* PAGE */
+.page { display: none; padding-top: 70px; min-height: 100vh; }
+.page.active { display: block; }
+
+/* HOMEPAGE */
+.hero { position: relative; height: calc(100vh - 70px); min-height: 600px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.hero-bg { position: absolute; inset: 0; background: linear-gradient(135deg, #d4a574 0%, #c9956b 30%, #b8864b 60%, #8b6914 100%); }
+.hero-bg::before { content: ''; position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1540555700478-4bcd7c79e4284?w=1920&q=80') center/cover; opacity: 0.4; mix-blend-mode: multiply; }
+.hero-content { position: relative; z-index: 2; text-align: center; color: var(--bg-white); max-width: 900px; padding: 0 20px; }
+.hero-title { font-family: 'Playfair Display', serif; font-size: clamp(32px, 5vw, 56px); font-weight: 400; font-style: italic; line-height: 1.2; margin-bottom: 16px; text-shadow: 0 2px 20px rgba(0,0,0,0.3); }
+.hero-subtitle { font-size: 14px; font-weight: 400; letter-spacing: 0.5px; margin-bottom: 40px; opacity: 0.9; }
+.search-bar { display: flex; background: var(--bg-white); border-radius: 4px; overflow: hidden; max-width: 700px; margin: 0 auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+.search-field { flex: 1; padding: 18px 24px; border: none; border-right: 1px solid var(--border-light); font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text-dark); outline: none; cursor: pointer; display: flex; align-items: center; gap: 10px; background: var(--bg-white); }
+.search-field:last-of-type { border-right: none; }
+.search-field i { color: var(--text-light); font-size: 14px; }
+.search-field .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-lighter); display: block; margin-bottom: 2px; }
+.search-btn { padding: 18px 32px; background: #8b7355; color: var(--bg-white); border: none; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.3s; white-space: nowrap; }
+.search-btn:hover { background: #7a6548; }
+.explore-more { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); color: var(--text-dark); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 3; background: rgba(255,255,255,0.9); padding: 12px 24px; border-radius: 4px; transition: transform 0.3s; }
+.explore-more:hover { transform: translateX(-50%) translateY(-3px); }
+.explore-more i { font-size: 16px; animation: bounce 2s infinite; }
+@keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-8px); } 60% { transform: translateY(-4px); } }
+
+.offers-section { padding: 100px 40px; max-width: 1200px; margin: 0 auto; }
+.section-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 400; color: var(--text-dark); margin-bottom: 50px; }
+.offers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.offer-card { cursor: pointer; transition: transform 0.4s ease; }
+.offer-card:hover { transform: translateY(-8px); }
+.offer-card:hover .offer-img { transform: scale(1.05); }
+.offer-img-wrap { overflow: hidden; border-radius: 4px; margin-bottom: 20px; aspect-ratio: 3/4; }
+.offer-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.offer-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; color: var(--text-dark); margin-bottom: 10px; }
+.offer-desc { font-size: 13px; color: var(--text-light); line-height: 1.7; margin-bottom: 16px; }
+.offer-link { font-size: 12px; color: var(--text-dark); text-decoration: underline; text-underline-offset: 4px; letter-spacing: 0.5px; transition: opacity 0.3s; }
+.offer-link:hover { opacity: 0.6; }
+
+.quote-section { text-align: center; padding: 60px 40px; position: relative; }
+.quote-section::before { content: ''; display: block; width: 40px; height: 1px; background: var(--border-light); margin: 0 auto 30px; }
+.quote-text { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 400; font-style: italic; color: var(--text-dark); line-height: 1.5; }
+.quote-section::after { content: ''; display: block; width: 40px; height: 1px; background: var(--border-light); margin: 30px auto 0; }
+
+.video-section { position: relative; max-width: 900px; margin: 0 auto 80px; border-radius: 4px; overflow: hidden; aspect-ratio: 16/9; }
+.video-placeholder { width: 100%; height: 100%; object-fit: cover; }
+.video-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); cursor: pointer; transition: background 0.3s; }
+.video-overlay:hover { background: rgba(0,0,0,0.3); }
+.play-btn { width: 80px; height: 80px; background: rgba(255,0,0,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: transform 0.3s; }
+.play-btn:hover { transform: scale(1.1); }
+.play-btn i { color: white; font-size: 28px; margin-left: 4px; }
+.video-info { position: absolute; bottom: 20px; left: 20px; display: flex; align-items: center; gap: 12px; color: white; font-size: 12px; }
+
+.destinations-section { padding: 80px 40px; max-width: 1200px; margin: 0 auto; }
+.destinations-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px; }
+.destinations-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 400; color: var(--text-dark); margin-bottom: 10px; }
+.destinations-subtitle { font-size: 14px; color: var(--text-light); max-width: 300px; line-height: 1.7; }
+.destinations-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.destination-card { cursor: pointer; transition: transform 0.4s; }
+.destination-card:hover { transform: translateY(-5px); }
+.destination-card:hover .destination-img { transform: scale(1.05); }
+.destination-img-wrap { overflow: hidden; border-radius: 4px; aspect-ratio: 3/4; margin-bottom: 16px; }
+.destination-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.destination-name { font-size: 12px; color: var(--text-dark); text-align: center; letter-spacing: 0.5px; }
+
+.life-onboard { padding: 80px 40px; max-width: 1200px; margin: 0 auto; }
+.life-onboard-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 400; color: var(--text-dark); margin-bottom: 40px; }
+.onboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.onboard-card { cursor: pointer; }
+.onboard-card:hover .onboard-img { transform: scale(1.05); }
+.onboard-img-wrap { overflow: hidden; border-radius: 4px; aspect-ratio: 4/5; margin-bottom: 20px; }
+.onboard-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.onboard-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; color: var(--text-dark); margin-bottom: 10px; }
+.onboard-desc { font-size: 13px; color: var(--text-light); line-height: 1.7; margin-bottom: 16px; }
+.onboard-link { font-size: 12px; color: var(--text-dark); text-decoration: underline; text-underline-offset: 4px; letter-spacing: 0.5px; }
+
+.inclusions-section { padding: 80px 40px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+.inclusions-content { background: var(--bg-light); padding: 50px; border-radius: 4px; border: 1px solid var(--border-light); }
+.inclusions-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 400; color: var(--text-dark); margin-bottom: 30px; text-align: center; }
+.inclusions-list { list-style: none; }
+.inclusions-list li { font-size: 13px; color: var(--text-light); line-height: 1.8; padding: 8px 0; border-bottom: 1px solid var(--border-light); position: relative; padding-left: 20px; }
+.inclusions-list li::before { content: '•'; position: absolute; left: 0; color: var(--text-dark); }
+.inclusions-list li:last-child { border-bottom: none; }
+.inclusions-img-wrap { border-radius: 4px; overflow: hidden; aspect-ratio: 4/5; }
+.inclusions-img { width: 100%; height: 100%; object-fit: cover; }
+
+.highlights-section { padding: 80px 40px; max-width: 1200px; margin: 0 auto; }
+.highlights-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 400; color: var(--text-dark); margin-bottom: 40px; }
+.highlights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.highlight-card { cursor: pointer; }
+.highlight-card:hover .highlight-img { transform: scale(1.03); }
+.highlight-img-wrap { overflow: hidden; border-radius: 4px; aspect-ratio: 16/10; margin-bottom: 20px; }
+.highlight-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.highlight-card-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; color: var(--text-dark); margin-bottom: 10px; }
+.highlight-card-desc { font-size: 13px; color: var(--text-light); line-height: 1.7; margin-bottom: 16px; }
+.highlight-link { font-size: 12px; color: var(--text-dark); text-decoration: underline; text-underline-offset: 4px; }
+
+.ocean-state { padding: 100px 40px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.ocean-state-content { padding-right: 40px; }
+.ocean-state-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 400; color: var(--text-dark); margin-bottom: 30px; }
+.ocean-state-text { font-size: 14px; color: var(--text-light); line-height: 1.8; margin-bottom: 30px; }
+.ocean-state-link { font-size: 12px; color: var(--text-dark); text-decoration: underline; text-underline-offset: 4px; letter-spacing: 0.5px; }
+.ocean-state-images { position: relative; height: 500px; }
+.ocean-img-1 { position: absolute; top: 0; left: 0; width: 65%; height: 70%; object-fit: cover; border-radius: 4px; z-index: 1; }
+.ocean-img-2 { position: absolute; bottom: 0; right: 0; width: 55%; height: 60%; object-fit: cover; border-radius: 4px; z-index: 2; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+
+.awards-section { padding: 60px 40px; display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; }
+.award-item { text-align: center; opacity: 0.7; }
+.award-text { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-light); margin-top: 8px; }
+
+/* FIND YOUR JOURNEY */
+.find-journey-bg { background: var(--bg-cream); }
+.page-header { text-align: center; padding: 50px 40px 30px; }
+.page-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 400; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dark); }
+
+.search-filters { max-width: 900px; margin: 0 auto; padding: 0 40px 20px; }
+.filter-row { display: flex; gap: 0; border-bottom: 1px solid var(--border-medium); position: relative; }
+.filter-field { flex: 1; padding: 16px 0; cursor: pointer; position: relative; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s; }
+.filter-field:first-child { border-right: 1px solid var(--border-medium); padding-right: 20px; margin-right: 20px; }
+.filter-field:hover { background: rgba(0,0,0,0.02); }
+.filter-label { font-size: 14px; color: var(--text-dark); font-weight: 400; }
+.filter-field i { font-size: 12px; color: var(--text-light); }
+.filter-advanced { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-light); cursor: pointer; padding: 8px 0; transition: color 0.3s; }
+.filter-advanced:hover { color: var(--text-dark); }
+.filter-count { font-size: 12px; color: var(--text-lighter); margin-top: 8px; }
+.filter-reset { text-align: right; margin-top: 8px; }
+.filter-reset a { font-size: 11px; color: var(--text-light); text-decoration: underline; text-underline-offset: 3px; letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.3s; cursor: pointer; }
+.filter-reset a:hover { color: var(--text-dark); }
+
+.view-controls { max-width: 1200px; margin: 30px auto 20px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center; }
+.view-toggle { display: flex; gap: 12px; }
+.view-toggle button { background: none; border: none; cursor: pointer; font-size: 16px; color: var(--text-light); padding: 4px; transition: color 0.3s; }
+.view-toggle button.active { color: var(--text-dark); }
+.view-tabs { display: flex; gap: 20px; }
+.view-tab { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-light); text-decoration: none; padding-bottom: 4px; border-bottom: 1px solid transparent; transition: all 0.3s; cursor: pointer; }
+.view-tab.active { color: var(--text-dark); border-bottom-color: var(--text-dark); }
+.sort-dropdown { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-light); cursor: pointer; }
+.sort-dropdown span { color: var(--text-dark); font-weight: 500; }
+
+.journey-grid { max-width: 1200px; margin: 0 auto; padding: 0 40px 60px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.journey-card { background: var(--bg-white); border-radius: 4px; overflow: hidden; border: 1px solid var(--border-light); transition: box-shadow 0.3s ease; animation: fadeInUp 0.5s ease forwards; opacity: 0; }
+.journey-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+.journey-card:hover .journey-img { transform: scale(1.05); }
+.journey-img-wrap { position: relative; overflow: hidden; aspect-ratio: 16/10; }
+.journey-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.journey-region { position: absolute; top: 12px; left: 12px; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--bg-white); text-shadow: 0 1px 3px rgba(0,0,0,0.5); font-weight: 500; }
+.journey-map-btn { position: absolute; bottom: 12px; right: 12px; background: rgba(255,255,255,0.9); border: none; padding: 6px 12px; font-size: 11px; font-family: 'Inter', sans-serif; cursor: pointer; border-radius: 3px; display: flex; align-items: center; gap: 6px; color: var(--text-dark); transition: background 0.3s; }
+.journey-map-btn:hover { background: var(--bg-white); }
+.journey-info { padding: 20px; }
+.journey-ports { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.port-group { flex: 1; }
+.port-group:last-child { text-align: right; }
+.port-name { font-size: 13px; font-weight: 600; color: var(--text-dark); margin-bottom: 2px; }
+.port-country { font-size: 12px; color: var(--text-light); }
+.port-arrow { color: var(--text-lighter); font-size: 14px; padding: 0 8px; margin-top: 4px; }
+.journey-dates { display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border-light); }
+.date-item { font-size: 12px; color: var(--text-light); }
+.journey-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.meta-ship { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+.meta-nights { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-light); }
+.journey-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--tag-bg); padding: 6px 12px; border-radius: 3px; font-size: 10px; color: var(--tag-text); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 16px; }
+.journey-tag i { font-size: 12px; color: var(--accent-gold); }
+.journey-price-row { display: flex; justify-content: space-between; align-items: flex-end; }
+.price-label { font-size: 11px; color: var(--text-lighter); margin-bottom: 4px; }
+.price-current { font-size: 20px; font-weight: 600; color: var(--text-dark); transition: color 0.3s; }
+.journey-card:hover .price-current { color: var(--accent-navy); }
+.price-original { font-size: 13px; color: var(--price-gray); text-decoration: line-through; margin-left: 6px; }
+.price-per-night { font-size: 11px; color: var(--text-lighter); margin-top: 2px; }
+.btn-details { padding: 10px 24px; background: var(--accent-navy); color: var(--bg-white); border: none; font-size: 12px; font-weight: 500; letter-spacing: 0.5px; cursor: pointer; border-radius: 3px; transition: background 0.3s; }
+.btn-details:hover { background: #152d4a; }
+
+.pagination { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 40px; }
+.pagination-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: none; border: 1px solid transparent; font-size: 13px; color: var(--text-light); cursor: pointer; border-radius: 3px; transition: all 0.3s; }
+.pagination-btn:hover { border-color: var(--border-medium); color: var(--text-dark); }
+.pagination-btn.active { background: var(--text-dark); color: var(--bg-white); border-color: var(--text-dark); }
+.pagination-btn.dots { cursor: default; }
+.pagination-btn.dots:hover { border-color: transparent; }
+.pagination-info { text-align: center; font-size: 12px; color: var(--text-lighter); margin-top: -20px; margin-bottom: 40px; }
+
+/* SHARED */
+.newsletter { background: var(--bg-light); padding: 40px; max-width: 1200px; margin: 0 auto 60px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; gap: 40px; border: 1px solid var(--border-light); }
+.newsletter-text { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 400; color: var(--text-dark); max-width: 400px; }
+.newsletter-form { display: flex; gap: 12px; flex: 1; max-width: 500px; }
+.newsletter-input { flex: 1; padding: 14px 20px; border: 1px solid var(--border-light); background: var(--bg-white); font-family: 'Inter', sans-serif; font-size: 13px; outline: none; border-radius: 3px; }
+.newsletter-input::placeholder { color: var(--text-lighter); }
+.newsletter-btn { padding: 14px 32px; background: var(--accent-navy); color: var(--bg-white); border: none; font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 3px; transition: background 0.3s; }
+.newsletter-btn:hover { background: #152d4a; }
+
+.footer { background: var(--bg-cream); padding: 60px 40px 30px; border-top: 1px solid var(--border-light); }
+.footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 40px; }
+.footer-col-title { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); margin-bottom: 24px; }
+.footer-links { list-style: none; }
+.footer-links li { margin-bottom: 14px; }
+.footer-links a { font-size: 13px; color: var(--text-dark); text-decoration: none; transition: opacity 0.3s; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.footer-links a:hover { opacity: 0.6; }
+.footer-contact-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+.footer-contact-item i { font-size: 16px; color: var(--text-light); margin-top: 2px; }
+.footer-contact-text { font-size: 13px; color: var(--text-dark); }
+.footer-contact-text small { display: block; font-size: 11px; color: var(--text-lighter); margin-top: 2px; }
+.footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 30px; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+.footer-copyright { font-size: 11px; color: var(--text-lighter); }
+.footer-legal { display: flex; gap: 24px; flex-wrap: wrap; }
+.footer-legal a { font-size: 11px; color: var(--text-light); text-decoration: none; transition: color 0.3s; cursor: pointer; }
+.footer-legal a:hover { color: var(--text-dark); }
+.footer-social { display: flex; gap: 20px; }
+.footer-social a { font-size: 16px; color: var(--text-dark); transition: opacity 0.3s; text-decoration: none; }
+.footer-social a:hover { opacity: 0.6; }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.journey-card:nth-child(1) { animation-delay: 0.05s; }
+.journey-card:nth-child(2) { animation-delay: 0.1s; }
+.journey-card:nth-child(3) { animation-delay: 0.15s; }
+.journey-card:nth-child(4) { animation-delay: 0.2s; }
+.journey-card:nth-child(5) { animation-delay: 0.25s; }
+.journey-card:nth-child(6) { animation-delay: 0.3s; }
+.journey-card:nth-child(7) { animation-delay: 0.35s; }
+.journey-card:nth-child(8) { animation-delay: 0.4s; }
+.journey-card:nth-child(9) { animation-delay: 0.45s; }
+.journey-card:nth-child(10) { animation-delay: 0.5s; }
+.journey-card:nth-child(11) { animation-delay: 0.55s; }
+.journey-card:nth-child(12) { animation-delay: 0.6s; }
+
+@media (max-width: 1024px) {
+.offers-grid, .destinations-grid, .onboard-grid, .journey-grid { grid-template-columns: repeat(2, 1fr); }
+.inclusions-section, .ocean-state { grid-template-columns: 1fr; }
+.ocean-state-images { height: 400px; }
+.highlights-grid { grid-template-columns: 1fr; }
+.footer-inner { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+.header-inner { padding: 0 20px; }
+.nav-main { display: none; }
+.search-bar { flex-direction: column; }
+.search-field { border-right: none; border-bottom: 1px solid var(--border-light); }
+.offers-grid, .destinations-grid, .onboard-grid, .journey-grid { grid-template-columns: 1fr; }
+.footer-inner { grid-template-columns: 1fr; }
+.newsletter { flex-direction: column; text-align: center; }
+.newsletter-form { width: 100%; }
+.footer-bottom { flex-direction: column; text-align: center; }
+.view-controls { flex-wrap: wrap; gap: 16px; }
+}
+html { scroll-behavior: smooth; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-light); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-lighter); }
+</style>
+<base target="_blank">
+</head>
+<body>
+<!-- HEADER -->
+<header class="header" id="header">
+<div class="header-inner">
+<a class="logo" onclick="navigateTo('home')">
+<div class="logo-icon"></div>
+<div><div class="logo-text">Explora</div><div class="logo-sub">Journeys</div></div>
+</a>
+<nav>
+<ul class="nav-main">
+<li><a onclick="navigateTo('find-journey')" id="nav-find">Find a Journey</a></li>
+<li><a onclick="navigateTo('home')" id="nav-destinations">Destinations</a></li>
+<li><a onclick="navigateTo('home')" id="nav-ships">Ships</a></li>
+<li><a onclick="navigateTo('home')" id="nav-experience">The Explora Experience</a></li>
+<li><a onclick="navigateTo('home')" id="nav-offers">Offers & Fares</a></li>
+</ul>
+</nav>
+<div class="header-actions">
+<i class="fas fa-search"></i>
+<i class="far fa-user"></i>
+<button class="btn-contact">Contact Us</button>
+<button class="btn-reserve">Reserve</button>
+</div>
+</div>
+</header>
+
+<!-- HOMEPAGE -->
+<div class="page active" id="page-home">
+<section class="hero">
+<div class="hero-bg"></div>
+<div class="hero-content">
+<h1 class="hero-title"><em>Maybe</em> the best hotel <em>isn't a hotel</em></h1>
+<p class="hero-subtitle">Reserve by 23 June 2026 and enjoy exceptional savings.</p>
+<div class="search-bar">
+<div class="search-field" onclick="navigateTo('find-journey')"><i class="fas fa-map-marker-alt"></i><div><span class="label">Where to?</span><span>Anywhere</span></div></div>
+<div class="search-field" onclick="navigateTo('find-journey')"><i class="far fa-calendar"></i><div><span class="label">When?</span><span>Anytime</span></div></div>
+<button class="search-btn" onclick="navigateTo('find-journey')">View 749 Journeys</button>
+</div>
+</div>
+<div class="explore-more" onclick="scrollToSection('offers')"><span>Explore more</span><i class="fas fa-chevron-down"></i></div>
+</section>
+
+<section class="offers-section" id="offers">
+<h2 class="section-title">Explore our Latest Offers</h2>
+<div class="offers-grid">
+<div class="offer-card" onclick="navigateTo('find-journey')"><div class="offer-img-wrap"><img src="https://images.unsplash.com/photo-1548574505-5e239809ee19?w=600&q=80" class="offer-img"></div><h3 class="offer-title">An Invitation to Discover</h3><p class="offer-desc">Receive up to 25% savings and up to €3,000 EUR Explora Credit.</p><span class="offer-link">Discover the offer</span></div>
+<div class="offer-card" onclick="navigateTo('find-journey')"><div class="offer-img-wrap"><img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80" class="offer-img"></div><h3 class="offer-title">Last-Minute Invitation</h3><p class="offer-desc">Enjoy savings of up to 30% and 10% reduced deposit.</p><span class="offer-link">Discover the offer</span></div>
+<div class="offer-card" onclick="navigateTo('find-journey')"><div class="offer-img-wrap"><img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&q=80" class="offer-img"></div><h3 class="offer-title">A Spontaneous Summer Invitation</h3><p class="offer-desc">Receive up to 30% savings and up to €2,000 EUR per suite.</p><span class="offer-link">Discover the offer</span></div>
+</div>
+</section>
+
+<section class="quote-section"><p class="quote-text"><em>Maybe</em> the best suite comes with a <em>new view every day.</em></p></section>
+
+<section class="video-section">
+<img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1200&q=80" class="video-placeholder">
+<div class="video-overlay"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+<div class="video-info"><span>Maybe the best hotel isn't a hotel — Explore the Ocean State of Mind | Explora Journeys</span></div>
+</section>
+
+<section class="quote-section"><p class="quote-text">Transformative Ocean Journeys</p></section>
+
+<section class="destinations-section">
+<div class="destinations-header"><div><h2 class="destinations-title">Our Destinations</h2><p class="destinations-subtitle">The perfect blend of celebrated destinations and regions less travelled.</p></div></div>
+<div class="destinations-grid">
+<div class="destination-card" onclick="navigateTo('find-journey')"><div class="destination-img-wrap"><img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=400&q=80" class="destination-img"></div><p class="destination-name">Mediterranean & Western Europe</p></div>
+<div class="destination-card" onclick="navigateTo('find-journey')"><div class="destination-img-wrap"><img src="https://images.unsplash.com/photo-15897792915-7a20d6f4f2b0?w=400&q=80" class="destination-img"></div><p class="destination-name">Caribbean & Central America</p></div>
+<div class="destination-card" onclick="navigateTo('find-journey')"><div class="destination-img-wrap"><img src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&q=80" class="destination-img"></div><p class="destination-name">Alaska</p></div>
+<div class="destination-card" onclick="navigateTo('find-journey')"><div class="destination-img-wrap"><img src="https://images.unsplash.com/photo-1528164344705-47542687000d?w=400&q=80" class="destination-img"></div><p class="destination-name">Asia</p></div>
+</div>
+</section>
+
+<section class="life-onboard">
+<h2 class="life-onboard-title">Life onboard</h2>
+<div class="onboard-grid">
+<div class="onboard-card"><div class="onboard-img-wrap"><img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=500&q=80" class="onboard-img"></div><h3 class="onboard-name">Suites</h3><p class="onboard-desc">Serene and spacious – your luxury sanctuary at sea.</p><span class="onboard-link">Explore Suites</span></div>
+<div class="onboard-card"><div class="onboard-img-wrap"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=500&q=80" class="onboard-img"></div><h3 class="onboard-name">Dining</h3><p class="onboard-desc">Unforgettable culinary experiences, globally curated.</p><span class="onboard-link">Explore Dining</span></div>
+<div class="onboard-card"><div class="onboard-img-wrap"><img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=500&q=80" class="onboard-img"></div><h3 class="onboard-name">Ocean Wellness</h3><p class="onboard-desc">Where the spirit of the sea nurtures your body and soul.</p><span class="onboard-link">Explore Ocean Wellness</span></div>
+</div>
+</section>
+
+<section class="inclusions-section">
+<div class="inclusions-content">
+<h3 class="inclusions-title">All Journeys Include</h3>
+<ul class="inclusions-list">
+<li>Nine distinct culinary experiences, including In-Suite Dining</li>
+<li>Unlimited beverages including fine wines, champagne, premium spirits, specialty coffees, teas and soft drinks, available anytime, including in-suite</li>
+<li>One in-suite welcome bottle of champagne on arrival</li>
+<li>One in-suite bottle of wine and one in-suite bottle of spirit of your preference on arrival</li>
+<li>Access to Ocean Wellness – The Spa thermal area</li>
+<li>Group wellness, fitness and mindfulness activities</li>
+<li>Complimentary high-speed Wi-Fi throughout the ship</li>
+<li>Authentic and intuitive service from our team of hospitality experts</li>
+<li>Onboard gratuities</li>
+<li>Shuttle services from port to city centre (where required / available)</li>
+</ul>
+</div>
+<div class="inclusions-img-wrap"><img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80" class="inclusions-img"></div>
+</section>
+
+<section class="highlights-section">
+<h2 class="highlights-title">Highlights</h2>
+<div class="highlights-grid">
+<div class="highlight-card"><div class="highlight-img-wrap"><img src="https://images.unsplash.com/photo-1566326433602-98e2b0b50003?w=800&q=80" class="highlight-img"></div><h3 class="highlight-card-title">Monaco Race Weekend, Reimagined</h3><p class="highlight-card-desc">From 3 to 8 June 2026, EXPLORA I will offer front-row access to the FORMULA 1 LOUIS VUITTON GRAND PRIX DE MONACO 2026.</p><span class="highlight-link">Explore Monaco Journeys</span></div>
+<div class="highlight-card"><div class="highlight-img-wrap"><img src="https://images.unsplash.com/photo-1540946485063-a40da27545f8?w=800&q=80" class="highlight-img"></div><h3 class="highlight-card-title">Explora Journeys Swiss SailGP Team</h3><p class="highlight-card-desc">Explora Journeys has entered into a multi-year major global sports partnership as the Title Partner of the Swiss SailGP Team.</p><span class="highlight-link">Discover the Partnership</span></div>
+</div>
+</section>
+
+<section class="ocean-state">
+<div class="ocean-state-content">
+<h2 class="ocean-state-title">Explore the Ocean State of Mind</h2>
+<p class="ocean-state-text">Maybe luxury travel doesn't need to follow the usual rules.<br><br>Explora Journeys invites you to consider a new way of travelling. One shaped by the ocean, guided by curiosity, and defined by how it makes you feel.</p>
+<span class="ocean-state-link">Explore more</span>
+</div>
+<div class="ocean-state-images">
+<img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500&q=80" class="ocean-img-1">
+<img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=500&q=80" class="ocean-img-2">
+</div>
+</section>
+
+<section class="awards-section">
+<div class="award-item"><div style="font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic; color: var(--text-dark);">Travel + Leisure</div><div class="award-text">2025 World's Best Awards</div></div>
+<div class="award-item"><div style="font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic; color: var(--text-dark);">Travel + Leisure</div><div class="award-text">2025 It List</div></div>
+<div class="award-item"><div style="font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic; color: var(--text-dark);">Condé Nast Traveler</div><div class="award-text">2025 Hot List</div></div>
+</section>
+</div>
+
+<!-- FIND YOUR JOURNEY PAGE -->
+<div class="page find-journey-bg" id="page-find-journey">
+<div class="page-header"><h1 class="page-title">Find Your Journey</h1></div>
+
+<div class="search-filters">
+<div class="filter-row">
+<div class="filter-field"><span class="filter-label">Where to?</span><i class="fas fa-chevron-down"></i></div>
+<div class="filter-field"><span class="filter-label">When?</span><i class="fas fa-chevron-down"></i></div>
+<div class="filter-advanced"><i class="fas fa-sliders-h"></i><span>Advanced</span></div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<p class="filter-count">749 journeys available</p>
+<div class="filter-reset"><a>Reset Filters</a></div>
+</div>
+</div>
+
+<div class="view-controls">
+<div class="view-toggle">
+<button class="active" title="Grid view"><i class="fas fa-th"></i></button>
+<button title="List view"><i class="fas fa-list"></i></button>
+</div>
+<div class="view-tabs">
+<span class="view-tab active">Photo View</span>
+<span class="view-tab">Map View</span>
+</div>
+<div class="sort-dropdown"><span>Sort by:</span><span>Date Closest</span><i class="fas fa-chevron-down"></i></div>
+</div>
+
+<div class="journey-grid">
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1613395877344-13d4c79e4284?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Piraeus (Athens)</div><div class="port-country">Greece</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Piraeus (Athens)</div><div class="port-country">Greece</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">15 Jun 2026</span><span class="date-item">22 Jun 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora II</span><span class="meta-nights"><i class="far fa-moon"></i> 7 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Multiple Offers Available (2)</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$4,840</span><span class="price-original">$6,550</span></div><div class="price-per-night">$691 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Barcelona</div><div class="port-country">Spain</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Barcelona</div><div class="port-country">Spain</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">15 Jun 2026</span><span class="date-item">22 Jun 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora I</span><span class="meta-nights"><i class="far fa-moon"></i> 7 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Last-Minute Invitation</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$6,615</span><span class="price-original">$7,350</span></div><div class="price-per-night">$945 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Piraeus (Athens)</div><div class="port-country">Greece</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Fusina (Venice)</div><div class="port-country">Italy</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">15 Jun 2026</span><span class="date-item">29 Jun 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora II</span><span class="meta-nights"><i class="far fa-moon"></i> 14 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Last-Minute Invitation</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$10,880</span><span class="price-original">$14,400</span></div><div class="price-per-night">$777 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Barcelona</div><div class="port-country">Spain</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Civitavecchia (Rome)</div><div class="port-country">Italy</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">15 Jun 2026</span><span class="date-item">29 Jun 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora I</span><span class="meta-nights"><i class="far fa-moon"></i> 14 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Last-Minute Invitation</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$12,240</span><span class="price-original">$14,350</span></div><div class="price-per-night">$874 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Piraeus (Athens)</div><div class="port-country">Greece</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Fusina (Venice)</div><div class="port-country">Italy</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">22 Jun 2026</span><span class="date-item">29 Jun 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora II</span><span class="meta-nights"><i class="far fa-moon"></i> 7 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Last-Minute Invitation</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$6,290</span><span class="price-original">$7,490</span></div><div class="price-per-night">$899 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1548574505-5e239809ee19?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Barcelona</div><div class="port-country">Spain</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Civitavecchia (Rome)</div><div class="port-country">Italy</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">22 Jun 2026</span><span class="date-item">29 Jun 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora I</span><span class="meta-nights"><i class="far fa-moon"></i> 7 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Last-Minute Invitation</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$6,315</span><span class="price-original">$6,650</span></div><div class="price-per-night">$902 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Barcelona</div><div class="port-country">Spain</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Barcelona</div><div class="port-country">Spain</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">22 Jun 2026</span><span class="date-item">06 Jul 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora I</span><span class="meta-nights"><i class="far fa-moon"></i> 14 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Last-Minute Invitation</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$11,815</span><span class="price-original">$14,700</span></div><div class="price-per-night">$844 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Civitavecchia (Rome)</div><div class="port-country">Italy</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Barcelona</div><div class="port-country">Spain</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">29 Jun 2026</span><span class="date-item">06 Jul 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora I</span><span class="meta-nights"><i class="far fa-moon"></i> 7 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Last-Minute Invitation</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$5,650</span><span class="price-original">$6,650</span></div><div class="price-per-night">$807 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1499678329028-101435549a4e?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Civitavecchia (Rome)</div><div class="port-country">Italy</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Civitavecchia (Rome)</div><div class="port-country">Italy</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">29 Jun 2026</span><span class="date-item">13 Jul 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora I</span><span class="meta-nights"><i class="far fa-moon"></i> 14 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Last-Minute Invitation</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$10,965</span><span class="price-original">$13,600</span></div><div class="price-per-night">$783 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Piraeus (Athens)</div><div class="port-country">Greece</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Piraeus (Athens)</div><div class="port-country">Greece</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">06 Jul 2026</span><span class="date-item">13 Jul 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora II</span><span class="meta-nights"><i class="far fa-moon"></i> 7 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Multiple Offers Available (2)</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$5,085</span><span class="price-original">$6,150</span></div><div class="price-per-night">$726 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1566326433602-98e2b0b50003?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Barcelona</div><div class="port-country">Spain</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Civitavecchia (Rome)</div><div class="port-country">Italy</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">06 Jul 2026</span><span class="date-item">13 Jul 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora I</span><span class="meta-nights"><i class="far fa-moon"></i> 7 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Last-Minute Invitation</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$5,625</span><span class="price-original">$6,250</span></div><div class="price-per-night">$804 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+
+<div class="journey-card">
+<div class="journey-img-wrap">
+<img src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=600&q=80" class="journey-img">
+<span class="journey-region">Mediterranean & Western Europe</span>
+<button class="journey-map-btn"><i class="far fa-map"></i> Map</button>
+</div>
+<div class="journey-info">
+<div class="journey-ports">
+<div class="port-group"><div class="port-name">Piraeus (Athens)</div><div class="port-country">Greece</div></div>
+<i class="fas fa-arrow-right port-arrow"></i>
+<div class="port-group"><div class="port-name">Fusina (Venice)</div><div class="port-country">Italy</div></div>
+</div>
+<div class="journey-dates"><span class="date-item">06 Jul 2026</span><span class="date-item">20 Jul 2026</span></div>
+<div class="journey-meta"><span class="meta-ship"><i class="fas fa-ship"></i> Explora II</span><span class="meta-nights"><i class="far fa-moon"></i> 14 Nights</span></div>
+<div class="journey-tag"><i class="fas fa-tag"></i>Last-Minute Invitation</div>
+<div class="journey-price-row">
+<div><div class="price-label">Per guest, from:</div><div><span class="price-current">$11,610</span><span class="price-original">$13,600</span></div><div class="price-per-night">$829 per night</div></div>
+<button class="btn-details">Details</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="pagination-info">1 - 12 of 749 results</div>
+<div class="pagination">
+<button class="pagination-btn arrow"><i class="fas fa-chevron-left"></i></button>
+<button class="pagination-btn active">1</button>
+<button class="pagination-btn">2</button>
+<button class="pagination-btn">3</button>
+<button class="pagination-btn dots">...</button>
+<button class="pagination-btn">63</button>
+<button class="pagination-btn arrow"><i class="fas fa-chevron-right"></i></button>
+</div>
+</div>
+
+<!-- NEWSLETTER -->
+<section class="newsletter">
+<p class="newsletter-text">Stay informed – sign up for our newsletter for the latest offers and destinations</p>
+<form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+<input type="email" class="newsletter-input" placeholder="Enter your Email address...">
+<button type="submit" class="newsletter-btn">Subscribe</button>
+</form>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+<div class="footer-inner">
+<div>
+<h4 class="footer-col-title">Contact Us</h4>
+<div class="footer-contact-item"><i class="fas fa-phone-alt"></i><div class="footer-contact-text">+41 43 508 64 78<small>Complimentary, available 24 hours</small></div></div>
+<div class="footer-contact-item"><i class="far fa-envelope"></i><div class="footer-contact-text">contact@explorajourneys.com<small>We aim to respond within 24 hours</small></div></div>
+<div class="footer-contact-item"><i class="far fa-file-alt"></i><div class="footer-contact-text">Request a Quote<small>Allow us to tailor and quote a Journey</small></div></div>
+</div>
+<div>
+<h4 class="footer-col-title">Professional Spaces</h4>
+<ul class="footer-links">
+<li><a>Travel Advisors</a></li>
+<li><a>Press & Media</a></li>
+<li><a>Careers</a></li>
+</ul>
+</div>
+<div>
+<h4 class="footer-col-title">Plan Your Journeys</h4>
+<ul class="footer-links">
+<li><a>Manage your Reservation</a></li>
+<li><a>Download our Brochures</a></li>
+<li><a>Join Explora Club</a></li>
+<li><a>FAQs</a></li>
+</ul>
+</div>
+<div>
+<h4 class="footer-col-title">About</h4>
+<ul class="footer-links">
+<li><a>About Explora Journeys</a></li>
+<li><a>Download our App</a></li>
+<li><a>Our Awards</a></li>
+<li><a>Partnerships</a></li>
+<li><a>Ocean State of Mind</a></li>
+<li><a>Our Brand Ambassador Jannik Sinner</a></li>
+<li><a>Health & Safety</a></li>
+<li><a>MSC Foundation</a></li>
+<li><a>MSC Group</a></li>
+<li><a>Lost & Found</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<div class="footer-copyright">Copyright 2026<br>Explora Journeys</div>
+<div class="footer-legal">
+<a><i class="fas fa-globe" style="margin-right:4px"></i>International</a>
+<a><i class="fas fa-language" style="margin-right:4px"></i>English</a>
+<a>Cookies</a>
+<a>Privacy Policy</a>
+<a>Terms & Conditions</a>
+<a>Code of Conduct</a>
+</div>
+<div class="footer-social">
+<a href="#"><i class="fab fa-facebook-f"></i></a>
+<a href="#"><i class="fab fa-instagram"></i></a>
+<a href="#"><i class="fab fa-tiktok"></i></a>
+<a href="#"><i class="fab fa-x-twitter"></i></a>
+<a href="#"><i class="fab fa-youtube"></i></a>
+</div>
+</div>
+</footer>
+
+<script>
+// Navigation
+function navigateTo(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-main a').forEach(a => a.classList.remove('active'));
+
+    if (page === 'home') {
+        document.getElementById('page-home').classList.add('active');
+        window.scrollTo(0, 0);
+    } else if (page === 'find-journey') {
+        document.getElementById('page-find-journey').classList.add('active');
+        document.getElementById('nav-find').classList.add('active');
+        window.scrollTo(0, 0);
+    }
+}
+
+function scrollToSection(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+// Header scroll
+window.addEventListener('scroll', () => {
+    const header = document.getElementById('header');
+    if (window.scrollY > 50) header.classList.add('scrolled');
+    else header.classList.remove('scrolled');
+});
+
+// View toggle
+document.querySelectorAll('.view-toggle button').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+// Pagination
+document.querySelectorAll('.pagination-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        if (!this.classList.contains('arrow') && !this.classList.contains('dots')) {
+            document.querySelectorAll('.pagination-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        }
+    });
+});
+</script>
+</body>
+</html>
