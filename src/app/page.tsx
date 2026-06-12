@@ -2,8 +2,21 @@ import Link from "next/link";
 import SpotlightCard from "@/components/SpotlightCard";
 import TypingTitle from "@/components/TypingTitle";
 import { CustomDatePicker } from "@/components/ui/date-picker";
+import { supabase } from "@/lib/supabase";
 
-export default function Home() {
+export const revalidate = 0; // Ensures fresh data is fetched on load (for CMS)
+
+export default async function Home() {
+  const [packagesRes, facilitiesRes, galleriesRes] = await Promise.all([
+    supabase.from("packages").select("*").order("created_at", { ascending: false }).limit(6),
+    supabase.from("facilities").select("*").order("created_at", { ascending: false }).limit(6),
+    supabase.from("galleries").select("*").order("created_at", { ascending: false }).limit(4),
+  ]);
+
+  const packages = packagesRes.data || [];
+  const facilities = facilitiesRes.data || [];
+  const galleries = galleriesRes.data || [];
+
   return (
     <>
       <section className="hero">
@@ -37,7 +50,7 @@ export default function Home() {
               <i className="far fa-calendar-alt z-10"></i>
               <CustomDatePicker />
             </div>
-            <Link href="/paket/umrah-reguler" className="search-btn text-center block" style={{lineHeight: '18px'}}>
+            <Link href="#offers" className="search-btn text-center block" style={{lineHeight: '18px'}}>
               Cek Keberangkatan
             </Link>
           </div>
@@ -51,38 +64,25 @@ export default function Home() {
       <section className="offers-section" id="offers">
         <h2 className="section-title">Eksplorasi Paket Pilihan Kami</h2>
         <div className="offers-grid">
-          <Link href="/paket/umrah-reguler" className="block no-underline">
-            <SpotlightCard className="offer-card !p-6 !border-[#333] h-full" spotlightColor="rgba(212, 175, 55, 0.25)">
-              <div className="offer-img-wrap">
-                <img src="https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=600&q=80" className="offer-img" alt="Umrah Reguler" />
-              </div>
-              <h3 className="offer-title">Umrah Reguler 9 Hari</h3>
-              <p className="offer-desc">Perjalanan spiritual 9 hari penuh makna dengan fasilitas lengkap dan pembimbing berpengalaman.</p>
-              <span className="offer-link">Lihat Detail Paket</span>
-            </SpotlightCard>
-          </Link>
-
-          <Link href="/paket/umrah-plus-turki" className="block no-underline">
-            <SpotlightCard className="offer-card !p-6 !border-[#333] h-full" spotlightColor="rgba(212, 175, 55, 0.25)">
-              <div className="offer-img-wrap">
-                <img src="https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=600&q=80" className="offer-img" alt="Umrah Plus Turki" />
-              </div>
-              <h3 className="offer-title">Umrah Plus Turki 12 Hari</h3>
-              <p className="offer-desc">Ibadah umrah dilanjutkan dengan menyusuri jejak sejarah Islam di Turki (Cappadocia & Istanbul).</p>
-              <span className="offer-link">Lihat Detail Paket</span>
-            </SpotlightCard>
-          </Link>
-
-          <Link href="/paket/umrah-ramadhan" className="block no-underline">
-            <SpotlightCard className="offer-card !p-6 !border-[#333] h-full" spotlightColor="rgba(212, 175, 55, 0.25)">
-              <div className="offer-img-wrap">
-                <img src="https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=600&q=80" className="offer-img" alt="Umrah Ramadhan" />
-              </div>
-              <h3 className="offer-title">Umrah Spesial Ramadhan</h3>
-              <p className="offer-desc">Raih pahala setara haji bersama Rasulullah dengan beribadah di bulan suci Ramadhan.</p>
-              <span className="offer-link">Lihat Detail Paket</span>
-            </SpotlightCard>
-          </Link>
+          {packages.length > 0 ? packages.map((pkg) => (
+            <Link key={pkg.id} href={`/paket/${pkg.slug}`} className="block no-underline">
+              <SpotlightCard className="offer-card !p-6 !border-[#333] h-full" spotlightColor="rgba(212, 175, 55, 0.25)">
+                <div className="offer-img-wrap">
+                  <img src={pkg.image_url || "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=600&q=80"} className="offer-img" alt={pkg.title} />
+                </div>
+                <h3 className="offer-title">{pkg.title}</h3>
+                <p className="offer-desc line-clamp-2">{pkg.description}</p>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-[#d4af37] font-medium text-sm">{pkg.duration_days} Hari</span>
+                  <span className="offer-link">Lihat Detail</span>
+                </div>
+              </SpotlightCard>
+            </Link>
+          )) : (
+            <div className="col-span-full text-center text-gray-500 py-8">
+              Belum ada paket yang tersedia.
+            </div>
+          )}
         </div>
       </section>
 
@@ -90,15 +90,25 @@ export default function Home() {
         <p className="quote-text"><em>Hati yang tenang</em> berawal dari perjalanan yang <em>dipersiapkan dengan baik.</em></p>
       </section>
 
-      <section className="video-section">
-        <video src="/umrah.mp4" poster="https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=1200&q=80" autoPlay loop muted playsInline className="video-placeholder object-cover" />
-        <div className="video-overlay">
-          <div className="play-btn"><i className="fas fa-play"></i></div>
-        </div>
-        <div className="video-info">
-          <span>Mari saksikan kebersamaan Jamaah Aminah Tour di Tanah Suci</span>
-        </div>
-      </section>
+      {galleries.length > 0 && (
+        <section className="py-20 px-4 md:px-8 bg-black">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-[#d4af37] mb-12" style={{ fontFamily: 'var(--font-playfair)' }}>Galeri Perjalanan Kami</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
+            {galleries.map((item) => (
+              <div key={item.id} className="relative aspect-square overflow-hidden rounded-xl group">
+                {item.video_url ? (
+                  <video src={item.video_url} autoPlay loop muted playsInline className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                ) : item.image_url ? (
+                  <img src={item.image_url} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                ) : null}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <p className="text-white font-medium">{item.title}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="destinations-section" id="fasilitas">
         <div className="destinations-header">
@@ -120,48 +130,25 @@ export default function Home() {
             </div>
             <div className="destination-name">MADINAH AL-MUNAWWARAH</div>
           </div>
-          <div className="destination-card">
-            <div className="destination-img-wrap">
-              <img src="https://images.unsplash.com/photo-1580418827493-f2b22c0a76cb?w=600&q=80" className="destination-img" alt="Jabal Uhud" />
-            </div>
-            <div className="destination-name">JABAL UHUD</div>
-          </div>
-          <div className="destination-card">
-            <div className="destination-img-wrap">
-              <img src="https://images.unsplash.com/photo-1580418827493-f2b22c0a76cb?w=600&q=80" className="destination-img" alt="Masjid Quba" />
-            </div>
-            <div className="destination-name">MASJID QUBA</div>
-          </div>
         </div>
       </section>
 
       <section className="life-onboard">
         <h2 className="life-onboard-title">Kenyamanan & Fasilitas Premium</h2>
         <div className="onboard-grid">
-          <div className="onboard-card">
-            <div className="onboard-img-wrap">
-              <img src="https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=600&q=80" className="onboard-img" alt="Hotel" />
+          {facilities.length > 0 ? facilities.map((fac) => (
+            <div key={fac.id} className="onboard-card">
+              <div className="onboard-img-wrap">
+                <img src={fac.image_url || "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=600&q=80"} className="onboard-img" alt={fac.title} />
+              </div>
+              <h3 className="onboard-name">{fac.title}</h3>
+              <p className="onboard-desc line-clamp-3">{fac.description}</p>
             </div>
-            <h3 className="onboard-name">Akomodasi Bintang 5</h3>
-            <p className="onboard-desc">Beristirahat di hotel berkelas dunia dengan jarak jalan kaki dari pelataran Masjid.</p>
-            <span className="onboard-link">Lihat Detail Fasilitas</span>
-          </div>
-          <div className="onboard-card">
-            <div className="onboard-img-wrap">
-              <img src="https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=600&q=80" className="onboard-img" alt="Dining" />
+          )) : (
+            <div className="col-span-full text-center text-gray-500 py-8">
+              Belum ada fasilitas yang ditambahkan.
             </div>
-            <h3 className="onboard-name">Cita Rasa Nusantara</h3>
-            <p className="onboard-desc">Layanan katering prasmanan dengan menu khas Indonesia yang lezat setiap hari.</p>
-            <span className="onboard-link">Lihat Menu Kami</span>
-          </div>
-          <div className="onboard-card">
-            <div className="onboard-img-wrap">
-              <img src="https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=600&q=80" className="onboard-img" alt="Transport" />
-            </div>
-            <h3 className="onboard-name">Transportasi Eksklusif</h3>
-            <p className="onboard-desc">Perjalanan yang mulus dengan Bus VIP Full AC selama ziarah dan perpindahan kota.</p>
-            <span className="onboard-link">Lihat Armada Kami</span>
-          </div>
+          )}
         </div>
       </section>
 

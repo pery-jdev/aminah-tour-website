@@ -1,0 +1,8 @@
+ALTER TABLE public.packages
+ADD COLUMN IF NOT EXISTS departure_date DATE,
+ADD COLUMN IF NOT EXISTS airline TEXT,
+ADD COLUMN IF NOT EXISTS price_quad TEXT,
+ADD COLUMN IF NOT EXISTS price_triple TEXT,
+ADD COLUMN IF NOT EXISTS price_double TEXT,
+ADD COLUMN IF NOT EXISTS included_facilities TEXT,
+ADD COLUMN IF NOT EXISTS excluded_facilities TEXT;

@@ -1,67 +1,8 @@
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
+import { notFound } from "next/navigation";
 
-const packageData: Record<string, any> = {
-  "umrah-reguler": {
-    title: "Umrah Reguler 9 Hari",
-    duration: "9 Malam Perjalanan",
-    image: "https://images.unsplash.com/photo-1565552643982-2d174eb6a506?w=1000&q=80",
-    include: [
-      "Tiket Pesawat PP Kelas Ekonomi",
-      "Visa Umrah",
-      "Hotel Makkah: Le Meridien Towers / Setaraf (Bintang 5)",
-      "Hotel Madinah: Taiba Front / Setaraf (Bintang 5)",
-      "Makan 3x sehari menu Indonesia",
-      "Transportasi Bus VIP Full AC",
-      "Muthawif / Pembimbing Ibadah Berpengalaman",
-      "Air Zam-zam 5 Liter (Jika diizinkan maskapai)",
-      "Perlengkapan Umrah Eksklusif (Koper, Tas, Ihram/Mukena)",
-    ],
-    exclude: [
-      "Paspor & Suntik Meningitis",
-      "Pengeluaran Pribadi (Laundry, Telp, dll)",
-      "Kelebihan Bagasi",
-      "Biaya Mahram (Bila diperlukan)",
-    ],
-    prices: [
-      { type: "Quad", note: "4 Orang / Kamar", amount: "Rp 29.750.000" },
-      { type: "Triple", note: "3 Orang / Kamar", amount: "Rp 31.250.000" },
-      { type: "Double", note: "2 Orang / Kamar", amount: "Rp 33.650.000" },
-    ],
-    waMessage: "Halo Aminah Tour Jepara, saya tertarik dengan Paket Umrah Reguler 9 Hari. Boleh minta informasi lebih lanjut?",
-    ship: "Pesawat Saudi Airlines",
-  },
-  "umrah-plus-turki": {
-    title: "Umrah Plus Turki",
-    duration: "12 Malam Perjalanan",
-    image: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=1000&q=80",
-    include: [
-      "Tiket Pesawat PP Kelas Ekonomi",
-      "Visa Umrah & Visa Turki",
-      "Hotel Bintang 5 di Makkah, Madinah, Istanbul, dan Cappadocia",
-      "Makan 3x sehari",
-      "City Tour Turki (Cappadocia, Bosphorus Cruise)",
-      "Muthawif & Guide Lokal Berbahasa Indonesia",
-    ],
-    exclude: ["Paspor", "Pengeluaran Pribadi", "Hot Air Balloon (Opsional)"],
-    prices: [
-      { type: "Quad", note: "4 Orang / Kamar", amount: "Rp 38.500.000" },
-    ],
-    waMessage: "Halo Aminah Tour Jepara, saya tertarik dengan Paket Umrah Plus Turki. Boleh minta informasi lebih lanjut?",
-    ship: "Pesawat Turkish Airlines",
-  },
-  "umrah-ramadhan": {
-    title: "Umrah Spesial Ramadhan",
-    duration: "14 Malam Perjalanan",
-    image: "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=1000&q=80",
-    include: ["Tiket PP", "Visa Umrah Ramadhan", "Hotel Berbuka & Sahur", "Bus AC", "Muthawif Pembimbing"],
-    exclude: ["Paspor", "Pengeluaran Pribadi"],
-    prices: [
-      { type: "Quad", note: "4 Orang / Kamar", amount: "Rp 42.000.000" },
-    ],
-    waMessage: "Halo Aminah Tour Jepara, saya tertarik dengan Paket Umrah Spesial Ramadhan. Boleh minta informasi lebih lanjut?",
-    ship: "Pesawat Garuda Indonesia",
-  }
-};
+export const revalidate = 0; // Ensures fresh data is fetched on load
 
 export default async function PackageDetail({
   params,
@@ -69,12 +10,36 @@ export default async function PackageDetail({
   params: Promise<{ id: string }>
 }) {
   const resolvedParams = await params;
-  const data = packageData[resolvedParams.id] || packageData["umrah-reguler"];
+  
+  const { data: pkg, error } = await supabase
+    .from("packages")
+    .select("*")
+    .eq("slug", resolvedParams.id)
+    .single();
+
+  if (error || !pkg) {
+    notFound();
+  }
+
+  // Parse included/excluded facilities safely
+  const include = pkg.included_facilities ? pkg.included_facilities.split('\n').filter((i: string) => i.trim() !== '') : [];
+  const exclude = pkg.excluded_facilities ? pkg.excluded_facilities.split('\n').filter((i: string) => i.trim() !== '') : [];
+
+  // Default image if none provided
+  const image = pkg.image_url || "https://images.unsplash.com/photo-1565552643982-2d174eb6a506?w=1000&q=80";
+
+  // Build prices array
+  const prices = [];
+  if (pkg.price_quad) prices.push({ type: "Quad", note: "4 Orang / Kamar", amount: pkg.price_quad });
+  if (pkg.price_triple) prices.push({ type: "Triple", note: "3 Orang / Kamar", amount: pkg.price_triple });
+  if (pkg.price_double) prices.push({ type: "Double", note: "2 Orang / Kamar", amount: pkg.price_double });
+
+  const waMessage = `Halo Aminah Tour Jepara, saya tertarik dengan ${pkg.title}. Boleh minta informasi lebih lanjut?`;
 
   return (
     <div className="find-journey-bg min-h-screen pt-28 pb-20">
       <div className="page-header">
-        <h1 className="page-title">{data.title}</h1>
+        <h1 className="page-title">{pkg.title}</h1>
       </div>
 
       <div className="max-w-[1200px] mx-auto px-10">
@@ -88,8 +53,8 @@ export default async function PackageDetail({
           <div>
             <div className="rounded overflow-hidden aspect-16/10 mb-10 border border-[#333]">
               <img 
-                src={data.image} 
-                alt={data.title} 
+                src={image} 
+                alt={pkg.title} 
                 className="w-full h-full object-cover"
               />
             </div>
@@ -113,35 +78,47 @@ export default async function PackageDetail({
 
               <div className="flex gap-6 mb-6">
                 <div className="inline-flex items-center gap-2 text-[12px] text-gray-400 uppercase tracking-wide">
-                  <i className="far fa-moon text-[#d4af37]"></i> {data.duration}
+                  <i className="far fa-moon text-[#d4af37]"></i> {pkg.duration_days} Hari
                 </div>
-                <div className="inline-flex items-center gap-2 text-[12px] text-gray-400 uppercase tracking-wide">
-                  <i className="fas fa-plane-departure text-[#d4af37]"></i> {data.ship}
-                </div>
+                {pkg.departure_date && (
+                  <div className="inline-flex items-center gap-2 text-[12px] text-gray-400 uppercase tracking-wide">
+                    <i className="far fa-calendar-check text-[#d4af37]"></i> {new Date(pkg.departure_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </div>
+                )}
+                {pkg.airline && (
+                  <div className="inline-flex items-center gap-2 text-[12px] text-gray-400 uppercase tracking-wide">
+                    <i className="fas fa-plane-departure text-[#d4af37]"></i> {pkg.airline}
+                  </div>
+                )}
               </div>
+              <p className="text-gray-400 text-sm leading-relaxed">{pkg.description}</p>
             </div>
 
-            <div className="bg-[#1a1a1a] p-10 rounded border border-[#333] mb-10">
-              <h3 className="font-serif text-2xl text-white mb-6">Fasilitas Termasuk</h3>
-              <ul className="list-none m-0 p-0">
-                {data.include.map((item: string, idx: number) => (
-                  <li key={idx} className="text-[13px] text-gray-400 leading-[1.8] py-3 border-b border-[#333] relative pl-6 last:border-0">
-                    <span className="absolute left-0 text-[#d4af37]">•</span> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {include.length > 0 && (
+              <div className="bg-[#1a1a1a] p-10 rounded border border-[#333] mb-10">
+                <h3 className="font-serif text-2xl text-white mb-6">Fasilitas Termasuk</h3>
+                <ul className="list-none m-0 p-0">
+                  {include.map((item: string, idx: number) => (
+                    <li key={idx} className="text-[13px] text-gray-400 leading-[1.8] py-3 border-b border-[#333] relative pl-6 last:border-0">
+                      <span className="absolute left-0 text-[#d4af37]">•</span> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-            <div className="bg-[#1a1a1a] p-10 rounded border border-[#333]">
-              <h3 className="font-serif text-2xl text-white mb-6">Belum Termasuk</h3>
-              <ul className="list-none m-0 p-0">
-                {data.exclude.map((item: string, idx: number) => (
-                  <li key={idx} className="text-[13px] text-gray-400 leading-[1.8] py-3 border-b border-[#333] relative pl-6 last:border-0">
-                    <span className="absolute left-0 text-red-500">×</span> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {exclude.length > 0 && (
+              <div className="bg-[#1a1a1a] p-10 rounded border border-[#333]">
+                <h3 className="font-serif text-2xl text-white mb-6">Belum Termasuk</h3>
+                <ul className="list-none m-0 p-0">
+                  {exclude.map((item: string, idx: number) => (
+                    <li key={idx} className="text-[13px] text-gray-400 leading-[1.8] py-3 border-b border-[#333] relative pl-6 last:border-0">
+                      <span className="absolute left-0 text-red-500">×</span> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           {/* Kolom Kanan - Pricing Card */}
@@ -152,11 +129,11 @@ export default async function PackageDetail({
               </h2>
               
               <div className="mb-10">
-                {data.prices.map((price: any, idx: number) => (
+                {prices.length > 0 ? prices.map((price: any, idx: number) => (
                   <div 
                     key={idx} 
                     className={`flex justify-between items-end py-5 ${
-                      idx !== data.prices.length - 1 ? "border-b border-[#333]" : ""
+                      idx !== prices.length - 1 ? "border-b border-[#333]" : ""
                     }`}
                   >
                     <div>
@@ -167,11 +144,15 @@ export default async function PackageDetail({
                       <div className="text-[11px] text-gray-500 mt-1 uppercase tracking-wider">{price.type} ({price.note})</div>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div className="text-center text-gray-500 text-sm py-4 border-b border-[#333]">
+                    Harga belum tersedia.<br/>Silakan hubungi kami.
+                  </div>
+                )}
               </div>
 
               <a 
-                href={`https://wa.me/6285746386927?text=${encodeURIComponent(data.waMessage)}`} 
+                href={`https://wa.me/6285746386927?text=${encodeURIComponent(waMessage)}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-full py-4 bg-[#25D366] text-white border-none text-[13px] font-medium tracking-[1px] uppercase cursor-pointer rounded flex items-center justify-center gap-2.5 transition-colors duration-300 hover:bg-[#128C7E] no-underline"

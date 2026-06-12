@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar1 } from "@/components/ui/navbar-1";
 import Footer from "@/components/Footer";
 import GlobalSpotlight from "@/components/GlobalSpotlight";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -36,12 +37,9 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
       </head>
       <body className={`${montserrat.variable} ${playfair.variable} ${notoArabic.variable} antialiased flex flex-col min-h-screen`}>
-        <GlobalSpotlight />
-        <Navbar1 />
-        <main className="flex-grow">
+        <LayoutWrapper>
           {children}
-        </main>
-        <Footer />
+        </LayoutWrapper>
       </body>
     </html>
   );
